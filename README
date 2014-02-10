@@ -1,0 +1,15 @@
+This is a set of tools specifically designed to process Tstat log files.
+When possible, they rely on multiprocessing library to speed up processing.
+Tools:
+
+1) regexp_filter.py - 	It apply a filter based on a regular expression on 
+						a given column, and outputs selected column only.
+2) get-organization-records.py - 	Given an organization name as input, it
+						rely on MaxMind database to processes Tstat logs and 
+						filter out unrelated records. It also implements the 
+						HTTP-knocking and reverse lookup techniques to 
+						retrieve information about hosted services
+3) time-series.py -		It provides an aggregated time series computed over
+						a specific column and a given time granularity
+4) quantile.py - 		It provides all quantiles (or percentiles) from 1 to 
+						99 of a empyrical distribition.    
