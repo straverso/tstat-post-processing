@@ -40,10 +40,10 @@ def matching(line, tcols):
     return to_match
 
 def read_tstat_log((filename, regex, outfilename, tcols, fields)):
-        """This function is called for each detected tstat log present in the input folder. Each input log is
-        handled by an independent subprocess, so that all the available cores are employed.
-        """
-        # if not terminating.is_set():
+    """This function is called for each detected tstat log present in the input folder. Each input log is
+    handled by an independent subprocess, so that all the available cores are employed.
+    """
+    if not terminating.is_set():
         # Open current input and output file
         infile = os.open(filename, os.O_RDONLY)
         outfile = open(outfilename, "w")        
@@ -118,7 +118,7 @@ def main():
     """Process each (zipped or not) log in the folder and apply regexp on a given column. Only
     specified columns are printed out.
     """
-    # terminating = mp.Event()
+    terminating = mp.Event()
     opt = options()
     indirectory = os.path.join("./", opt.read)
 
@@ -153,19 +153,19 @@ def main():
     global tstat 
     tstat = __import__(log)
 
-    # pool = mp.Pool(initializer=initializer, initargs=(terminating, ))
+    pool = mp.Pool(initializer=initializer, initargs=(terminating, ))
 
-    for f in files_in_dir:
-       read_tstat_log((f, opt.regex, "%s%s%s" % (opt.pre, f.replace(".gz", ""), opt.outsuff), opt.tcols, opt.fields))
+    # for f in files_in_dir:
+    #    read_tstat_log((f, opt.regex, "%s%s%s" % (opt.pre, f.replace(".gz", ""), opt.outsuff), opt.tcols, opt.fields))
 
-    # try:
-        # pool.map(read_tstat_log, [(f, opt.regex, "%s%s%s" % (opt.pre, f.replace(".gz", ""), opt.outsuff), opt.tcols, opt.fields) for f in files_in_dir])
-        # pool.close()
-    # except KeyboardInterrupt:
-        # pool.terminate()
-        # print("Interrupted!")
-    # finally:
-        # pool.join()
+    try:
+        pool.map(read_tstat_log, [(f, opt.regex, "%s%s%s" % (opt.pre, f.replace(".gz", ""), opt.outsuff), opt.tcols, opt.fields) for f in files_in_dir])
+        pool.close()
+    except KeyboardInterrupt:
+        pool.terminate()
+        print("Interrupted!")
+    finally:
+        pool.join()
     print "End."
 
 if __name__ == "__main__":
