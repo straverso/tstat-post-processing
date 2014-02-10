@@ -30,11 +30,11 @@ def get_fields_to_print(fields):
 
 def matching(line, tcols):
     """Extract the selected columns out of a tstat record (a line of a tstat log).
-    If all columns are specified, the whole record is printed out. 
+    If all columns are specified, the whole record considered for the match. 
     """
     if tcols != "all":
         record = tstat.tstatrecord(line)
-        to_match = " ".join([getattr(record, tcol) for tcol in tcols.split(",")])
+        to_match = " ".join([getattr(record, str(tcol)) for tcol in tcols.split(",")])
     else:
         to_match = line
     return to_match
@@ -62,25 +62,18 @@ def read_tstat_log((filename, regex, outfilename, tcols, fields)):
 
             while line[0] == '#':
                 line = inmap.readline()
+            print  tcols
             to_match = matching(line, tcols)
-            if re.search(regex, to_match):
-                record = tstat.tstatrecord(line)
-                if "all" not in fieldsArray:
-                    print out_string_for_write, fieldsArray, [getattr(record, field)  for field in fieldsArray]
-                    outfile.write(out_string_for_write.format(*[getattr(record, field)  for field in fieldsArray]))
-                else:
-                    print out_string_for_write, fieldsArray, line
-                    outfile.write(line)
-
+            
             while line:
                 to_match = matching(line, tcols)
                 if re.search(regex, to_match):
                     record = tstat.tstatrecord(line)
                     if "all" not in fieldsArray:
-                        print out_string_for_write, fieldsArray, [getattr(record, field)  for field in fieldsArray]
+                        # print out_string_for_write, fieldsArray, [getattr(record, field)  for field in fieldsArray]
                         outfile.write(out_string_for_write.format(*[getattr(record, field)  for field in fieldsArray]))
                     else:
-                        print out_string_for_write, fieldsArray, line
+                        # print out_string_for_write, fieldsArray, line
                         outfile.write(line)
                 line = inmap.readline()
             map.close()
@@ -110,8 +103,8 @@ def options():
     parser.add_option('-r','--read', dest='read', help='Read from tstat log file')
     parser.add_option('-l','--log', dest='logtype', help='Kind of log to process: http, tcp, udp, mm, skype, streaming, chat.')
     parser.add_option('-e','--regexp', dest='regex', help='Regular expression to use')
-    parser.add_option('-c','--tstat-print', dest='tcols', help='Tstat fields to print.')
-    parser.add_option('-f','--tstat-match', dest='fields', help='Tstat fields to match.')
+    parser.add_option('-c','--tstat-match', dest='tcols', help='Tstat fields to match.')
+    parser.add_option('-f','--tstat-print', dest='fields', help='Tstat fields to print.')
     parser.add_option('-I','--showip', dest='ip', help='If "y" add server IP address to outfile', default="f")
     if len(sys.argv) == 1:
         parser.print_help()

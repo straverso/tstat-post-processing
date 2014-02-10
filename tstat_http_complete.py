@@ -27,7 +27,7 @@ class tstatrecord:
             self.fqdn           = t[7]  
             self.path           = t[8]  
             self.referer        = t[9]      
-            self.user_agent     = t[10:-1]
+            self.user_agent     = str(t[10:-1])
         else:
             # Server Short description
             self.HTTP           = t[5] 
@@ -35,4 +35,4 @@ class tstatrecord:
             self.content_len    = t[7] 
             self.content_type   = t[8] 
             self.server         = t[9]
-            self.range          = t[10:-1]
+            self.range          = str(t[10:-1])
