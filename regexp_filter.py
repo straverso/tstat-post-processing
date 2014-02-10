@@ -45,47 +45,55 @@ def read_tstat_log((filename, regex, outfilename, tcols, fields)):
     """
     if not terminating.is_set():
         # Open current input and output file
-        infile = os.open(filename, os.O_RDONLY)
-        outfile = open(outfilename, "w")        
+        infile = open(filename, "r")
+        outfile = open(outfilename, "w")
+        ln = 0
         try:
-            map = mmap.mmap(infile, 0, prot=mmap.PROT_READ)
-            inmap = map
+            inmap = infile
             # Check the file is gzipped
             if filename.endswith(".gz"):
-                inmap = gzip.GzipFile(mode="r", fileobj=map)
+                inmap = gzip.GzipFile(mode="r", fileobj=infile)
             
             print ("Printing %s of log %s with %s on %s" % (fields, filename, regex, tcols))
 
-            out_string_for_write, fieldsArray = get_fields_to_print(fields)
+            try:
+                out_string_for_write, fieldsArray = get_fields_to_print(fields)
+            except IndexError:
+                print "Shorter line in log! \nline:%d %s" % (ln, line)
+                pass
+
 
             line = inmap.readline()
-
+            ln += 1
             while line[0] == '#':
                 line = inmap.readline()
-            print  tcols
+                ln += 1
             to_match = matching(line, tcols)
             
             while line:
-                to_match = matching(line, tcols)
-                if re.search(regex, to_match):
-                    record = tstat.tstatrecord(line)
-                    if "all" not in fieldsArray:
-                        # print out_string_for_write, fieldsArray, [getattr(record, field)  for field in fieldsArray]
-                        outfile.write(out_string_for_write.format(*[getattr(record, field)  for field in fieldsArray]))
-                    else:
-                        # print out_string_for_write, fieldsArray, line
-                        outfile.write(line)
-                line = inmap.readline()
-            map.close()
-            if filename.endswith(".gz"):
-                inmap.close()
-        # except:
-        #     print line
-        #     # terminating.set()
+                    try:
+                        to_match = matching(line, tcols)
+                        if re.search(regex, to_match):
+                            record = tstat.tstatrecord(line)
+                            if "all" not in fieldsArray:
+                                # print out_string_for_write, fieldsArray, [getattr(record, field)  for field in fieldsArray]
+                                outfile.write(out_string_for_write.format(*[getattr(record, field)  for field in fieldsArray]))
+                            else:
+                                # print out_string_for_write, fieldsArray, line
+                                outfile.write(line)
+                    except IndexError:
+                        print "Shorter line in log! \nline:%d %s" % (ln, line)
+                        pass
+                    finally:
+                        line = inmap.readline()
+                        ln += 1
+        except:
+            print line
+            print "Unexpected error:", sys.exc_info()[0]
         finally:
-            os.close(infile)
+            inmap.close()
             outfile.close()
-    # return  
+    return  
 
 def initializer(terminating_):
     """This places terminating in the global namespace of the worker subprocesses.
