@@ -104,7 +104,14 @@ def initializer(terminating_):
     terminating = terminating_  
 
 def options():
-    parser = OptionParser()
+    help_text = """    
+    Example for tcp_log_complete: print server IP where the FQDN starts "acme" 
+    python2.7 regexp_filter.py -r /path/to/tstat/logs/ -i .gz -e "^acme" -p /output/path/ -o .txt -c fqdn -l tcp -f sip
+
+    Example for http_log_complete: print the HTTP request method where the user agent contains "Mozilla" 
+    python2.7 regexp_filter.py -r /path/to/tstat/logs/ -i .gz -e "Mozilla" -p /output/path/ -o .txt -c user_agent -l http -f method   
+    """
+    parser = OptionParser(usage=help_text)
     parser.add_option('-p','--prefix', dest='pre', help='Output prefix/folder filename')
     parser.add_option('-o','--outsuffix', dest='outsuff', help='Output suffix filename')
     parser.add_option('-i','--insuffix', dest='insuff', help='Input suffix filename (.log, .gz, etc.)')
@@ -113,7 +120,7 @@ def options():
     parser.add_option('-e','--regexp', dest='regex', help='Regular expression to use')
     parser.add_option('-c','--tstat-match', dest='tcols', help='Tstat fields to match.')
     parser.add_option('-f','--tstat-print', dest='fields', help='Tstat fields to print.')
-    parser.add_option('-I','--showip', dest='ip', help='If "y" add server IP address to outfile', default="f")
+    (options, args) = parser.parse_args()
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
