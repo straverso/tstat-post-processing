@@ -1,7 +1,10 @@
 This is a set of tools specifically designed to process Tstat log files.
 When possible, they rely on multiprocessing library to speed up processing.
+They run with python 2.7 for now.
 Tools:
 
+0) tstat_*_complete.py -	They act as "masks" converting each Tstat record 
+						in an instance of class. 
 1) regexp_filter.py - 	It apply a filter based on a regular expression on 
 						a given column, and outputs selected column only.
 2) get-organization-records.py - 	Given an organization name as input, it
@@ -12,4 +15,4 @@ Tools:
 3) time-series.py -		It provides an aggregated time series computed over
 						a specific column and a given time granularity
 4) quantile.py - 		It provides all quantiles (or percentiles) from 1 to 
-						99 of a empyrical distribition.    
+						99 of an empyrical distribition.    
