@@ -47,6 +47,7 @@ import re
 import cdnscan
 from optparse import OptionParser
 import GeoIP
+import gzip
 
 class orgThread (Process):
     def __init__(self,threadID,inqueue,outqueue):
@@ -213,13 +214,15 @@ def main():
         t.start()
     if opt.read:
         fh = open(opt.read,'r')
+        if opt.read.endswith(".gz"):
+            fh = gzip.GzipFile(mode="r", fileobj=fh)
     else:
         fh = sys.stdin
 
 #    thread.start_new_thread(read_output, (lookup_out_queue, ))
     
     read_lines = 0
-    for line in fh.xreadlines():
+    for line in fh:
         if not line[0]=='#':
             db_in_queue.put(line)
             read_lines += 1
