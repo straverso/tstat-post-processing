@@ -254,7 +254,12 @@ def getIPOrg(ip):
     return gi.org_by_addr(ip)
 
 def options():
-    parser = OptionParser()
+    help_text = """    
+    Example for tcp_log_complete: print records which refer to "acme" organization 
+    python2.7 get-organization-records.py -r /path/to/log/folder/log_tcp_complete.gz -g /path/to/MMdb/GeoIPOrg.dat -o acme > /tmp/output.txt
+
+    """
+    parser = OptionParser(usage=help_text)
     parser.add_option('-p','--prefix', dest='pre',help='Output prefix filename')
     parser.add_option('-r','--read', dest='read',help='Read from tstat log file')
     parser.add_option('-g','--geoip', dest='geoip_path',help='Path to the GeoIP db')
