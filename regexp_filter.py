@@ -150,10 +150,6 @@ def main():
 	sys.exit(1)
 	
     
-    showip = False
-    if opt.ip == "y":
-        showip = True
-
     log = "tstat_tcp_complete"
     if opt.logtype == "tcp":
         log = 'tstat_tcp_complete'
