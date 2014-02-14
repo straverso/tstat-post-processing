@@ -10,7 +10,6 @@ import mmap
 import sys
 import os
 import re
-import gzip
 from optparse import OptionParser
 import multiprocessing as mp
 
@@ -49,11 +48,9 @@ def read_tstat_log((filename, regex, outfilename, tcols, fields)):
         outfile = open(outfilename, "w")
         ln = 0
         try:
-            inmap = infile
             # Check the file is gzipped
             if filename.endswith(".gz"):
-                inmap = gzip.GzipFile(mode="r", fileobj=infile)
-            
+                infile = os.popen("zcat " + filename)
             print ("Printing %s of log %s with %s on %s" % (fields, filename, regex, tcols))
 
             try:
@@ -63,10 +60,10 @@ def read_tstat_log((filename, regex, outfilename, tcols, fields)):
                 pass
 
 
-            line = inmap.readline()
+            line = infile.readline()
             ln += 1
             while line[0] == '#':
-                line = inmap.readline()
+                line = infile.readline()
                 ln += 1
             to_match = matching(line, tcols)
             
@@ -85,13 +82,13 @@ def read_tstat_log((filename, regex, outfilename, tcols, fields)):
                         print "Shorter line in log! \nline:%d %s" % (ln, line)
                         pass
                     finally:
-                        line = inmap.readline()
+                        line = infile.readline()
                         ln += 1
         except:
             print line
             print "Unexpected error:", sys.exc_info()[0]
         finally:
-            inmap.close()
+            infile.close()
             outfile.close()
     return  
 

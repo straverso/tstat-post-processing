@@ -47,7 +47,6 @@ import re
 import cdnscan
 from optparse import OptionParser
 import GeoIP
-import gzip
 
 class orgThread (Process):
     def __init__(self,threadID,inqueue,outqueue):
@@ -215,7 +214,7 @@ def main():
     if opt.read:
         fh = open(opt.read,'r')
         if opt.read.endswith(".gz"):
-            fh = gzip.GzipFile(mode="r", fileobj=fh)
+            fh = os.popen("zcat " + opt.read)
     else:
         fh = sys.stdin
 
