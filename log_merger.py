@@ -65,7 +65,10 @@ def tail_tstat_log(child_pipe, filename, timeoutset, pid):
                 # print(line[:-1])
         except TimeoutError:
             logging.warning("Timeout! Log ended now. Closing the read process for %s..." % filename)
-            subp.terminate()
+            parent = psutil.Process(subp.pid)
+            for child in parent.children(recursive=True):
+                child.kill()
+            parent.kill()
             return
         # sleep(0.001)
     subp.terminate()
