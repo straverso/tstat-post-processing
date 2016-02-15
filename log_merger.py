@@ -196,9 +196,11 @@ def main():
                 min_index = timestamps.index(min(timestamps))
                 outputfile.write(lines[min_index])
                 lines[min_index] = parent_pipes[min_index].recv()
-            except:
-                print(lines)
-                exit()
+            except Exception as e:
+                logging.error(e.__doc__)
+                logging.error(e.message)
+                logging.error(lines)
+                pass
 
 if __name__ == "__main__":
     main()
